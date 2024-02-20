@@ -149,7 +149,7 @@ class HBNBCommand(cmd.Cmd):
 
         # Checking if the provided class exists
         if class_name not in self.classes:
-            print(f" classe name is : {class_name}")
+            # print(f" classe name is : {class_name}")
             print("** class doesn't exist **")
             return
 
