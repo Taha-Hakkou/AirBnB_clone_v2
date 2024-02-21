@@ -145,11 +145,10 @@ class HBNBCommand(cmd.Cmd):
 
         # Splitting the input arguments into class name and key-value pairs
         class_name, *key_value_pairs = args.split()
-        # print(f" classe name is : {class_name}")
 
         # Checking if the provided class exists
         if class_name not in self.classes:
-            # print(f" classe name is : {class_name}")
+
             print("** class doesn't exist **")
             return
 
@@ -159,41 +158,45 @@ class HBNBCommand(cmd.Cmd):
 
         # Parsing key-value pairs
         for pair in key_value_pairs:
+
             try:
                 key, value = pair.split("=")
-                # print(value)
-                value = value.replace("_", " ").replace('"', "")
-                # print(value)
-                # print(type(value))
-                if "." in value:
+
+                if value.isdigit():
+                    value = int(value)
+                elif "." in value:
                     try:
                         value = float(value)
                     except ValueError:
                         print("Invalid number")
                         continue
-                    # Check if the type of value matches
-                    # the expected type for the key
-                    # Check if the key is valid TO DO
-                    # (Check if the key is valid for a specific Instance)
+                elif (
+                    (value is not None)
+                    and (value[0] == '"')
+                    and (value[-1] == '"')
+                ):
+                    value = value[1:-1]
+                    value = value.replace("_", " ")
+
                 if key not in self.types.keys():
-                    # print("** invalid key **")
-                    # return
                     continue
+
                 expected_type = self.types[key]
                 if expected_type and not isinstance(value, expected_type):
-                    # print("** invalid type **")
                     continue
-                    # return
+
                 obj_data[key] = value
 
             except ValueError:
                 print("** invalid key-value pair format **")
-                # return
                 continue
+
         if "id" not in obj_data:
             obj_data["id"] = str(uuid.uuid4())
+
         if "created_at" not in obj_data:
             obj_data["created_at"] = datetime.now().isoformat()
+
         if "updated_at" not in obj_data:
             obj_data["updated_at"] = datetime.now().isoformat()
 
