@@ -2,6 +2,7 @@
 """ Console Module """
 from datetime import datetime
 import uuid
+
 import cmd
 import sys
 from models.base_model import BaseModel
@@ -21,14 +22,10 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) " if sys.__stdin__.isatty() else ""
 
     classes = {
-        "BaseModel": BaseModel,
-        "User": User,
-        "Place": Place,
-        "State": State,
-        "City": City,
-        "Amenity": Amenity,
-        "Review": Review,
-    }
+               'BaseModel': BaseModel, 'User': User, 'Place': Place,
+               'State': State, 'City': City, 'Amenity': Amenity,
+               'Review': Review
+              }
     dot_cmds = ["all", "count", "show", "destroy", "update"]
     types = {
         "name": str,
@@ -45,6 +42,7 @@ class HBNBCommand(cmd.Cmd):
         "description": str,
         "city_id": str,
         "user_id": str,
+        "place_id": str,
         "amenity_ids": list,
         "text": str,
         "state_id": str,
@@ -74,12 +72,12 @@ class HBNBCommand(cmd.Cmd):
             _cls = pline[: pline.find(".")]
 
             # isolate and validate <command>
-            _cmd = pline[pline.find(".") + 1 : pline.find("(")]
+            _cmd = pline[pline.find(".") + 1: pline.find("(")]
             if _cmd not in HBNBCommand.dot_cmds:
                 raise Exception
 
             # if parantheses contain arguments, parse them
-            pline = pline[pline.find("(") + 1 : pline.find(")")]
+            pline = pline[pline.find("(") + 1: pline.find(")")]
             if pline:
                 # partition args: (<id>, [<delim>], [<*args>])
                 pline = pline.partition(", ")  # pline convert to tuple
@@ -142,66 +140,49 @@ class HBNBCommand(cmd.Cmd):
         if not args:
             print("** class name missing **")
             return
-
-        # Splitting the input arguments into class name and key-value pairs
-        class_name, *key_value_pairs = args.split()
-
-        # Checking if the provided class exists
-        if class_name not in self.classes:
-
+        cls, *pairs = args.split()
+        if cls not in self.classes:
             print("** class doesn't exist **")
             return
 
-        # Initializing a dictionary to store
-        # key-value pairs for the new instance
-        obj_data = {}
-
-        # Parsing key-value pairs
-        for pair in key_value_pairs:
-
+        params = {}
+        for pair in pairs:
             try:
                 key, value = pair.split("=")
+                if key not in self.types:
+                    print("** Invalid Key **")
+                    return
 
-                if value.isdigit():
-                    value = int(value)
+                if value[0] == '"' and value[-1] == '"':
+                    value = value.replace("_", " ")
+                    value = value[1:-1]
                 elif "." in value:
                     try:
                         value = float(value)
                     except ValueError:
-                        print("Invalid number")
-                        continue
-                elif (
-                    (value is not None)
-                    and (value[0] == '"')
-                    and (value[-1] == '"')
-                ):
-                    value = value[1:-1]
-                    value = value.replace("_", " ")
+                        print("** Invalid Value **")
+                else:
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        print("** Invalid value **")
 
-                if key not in self.types.keys():
-                    continue
-
-                expected_type = self.types[key]
-                if expected_type and not isinstance(value, expected_type):
-                    continue
-
-                obj_data[key] = value
+                if not isinstance(value, self.types[key]):
+                    print("** Invalid Type **")
+                    return
+                params[key] = value
 
             except ValueError:
                 print("** invalid key-value pair format **")
-                continue
 
-        if "id" not in obj_data:
-            obj_data["id"] = str(uuid.uuid4())
+        if "id" not in params:
+            params["id"] = str(uuid.uuid4())
+        if "created_at" not in params:
+            params["created_at"] = datetime.now().isoformat()
+        if "updated_at" not in params:
+            params["updated_at"] = datetime.now().isoformat()
 
-        if "created_at" not in obj_data:
-            obj_data["created_at"] = datetime.now().isoformat()
-
-        if "updated_at" not in obj_data:
-            obj_data["updated_at"] = datetime.now().isoformat()
-
-        # Creating a new instance of the specified class with the provided data
-        new_instance = self.classes[class_name](**obj_data)
+        new_instance = self.classes[cls](**params)
         storage.new(new_instance)
         storage.save()
         print(new_instance.id)
@@ -282,15 +263,14 @@ class HBNBCommand(cmd.Cmd):
         print_list = []
 
         if args:
-            args = args.split(" ")[0]  # remove possible trailing args
+            args = args.split(" ")[0]
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split(".")[0] == args:
-                    print_list.append(str(v))
+            for k, v in storage.all(self.classes[args]).items():
+                print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -355,7 +335,7 @@ class HBNBCommand(cmd.Cmd):
             if args and args[0] == '"':  # check for quoted arg
                 second_quote = args.find('"', 1)
                 att_name = args[1:second_quote]
-                args = args[second_quote + 1 :]
+                args = args[second_quote + 1:]
 
             args = args.partition(" ")
 
@@ -364,7 +344,7 @@ class HBNBCommand(cmd.Cmd):
                 att_name = args[0]
             # check for quoted val arg
             if args[2] and args[2][0] == '"':
-                att_val = args[2][1 : args[2].find('"', 1)]
+                att_val = args[2][1: args[2].find('"', 1)]
 
             # if att_val was not quoted arg
             if not att_val and args[2]:

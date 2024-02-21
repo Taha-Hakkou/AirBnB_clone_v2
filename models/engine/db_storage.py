@@ -3,6 +3,7 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from models.base_model import Base
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -24,7 +25,7 @@ class DBStorage:
         db = os.getenv("HBNB_MYSQL_DB")
         # the engine must be linked to the MySQL database and user
         # created before (hbnb_dev and hbnb_dev_db)
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'. \
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(user, pwd, host, db),
                                       pool_pre_ping=True)
         if os.getenv('HBNB_ENV') == 'test':
@@ -34,8 +35,10 @@ class DBStorage:
 
     def all(self, cls=None):
         """query on the current session all objects depending of the cls"""
+        objects = []
         if cls is None:
-            objects = self.__session.query(Base).all()
+            for aCls in [User, State, City, Place, Amenity, Review]:
+                objects += self.__session.query(aCls).all()
         else:
             objects = self.__session.query(cls).all()
         dictionary = {}
@@ -58,8 +61,7 @@ class DBStorage:
 
     def reload(self):
         """ creates all database tables & the current session """
-        Base.metadata.create_all(engine)
+        Base.metadata.create_all(self.__engine)
         sfactory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sfactory)
         self.__session = Session()
-

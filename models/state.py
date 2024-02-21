@@ -15,6 +15,7 @@ class State(BaseModel, Base):
     else:
         @property
         def cities(self):
+            """cities getter property"""
             from models import storage
             cities = []
             for k, v in storage.all():
