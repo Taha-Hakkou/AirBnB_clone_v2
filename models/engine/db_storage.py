@@ -23,26 +23,28 @@ class DBStorage:
         pwd = os.getenv("HBNB_MYSQL_PWD")
         host = os.getenv("HBNB_MYSQL_HOST")
         db = os.getenv("HBNB_MYSQL_DB")
-        # the engine must be linked to the MySQL database and user
-        # created before (hbnb_dev and hbnb_dev_db)
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(user, pwd, host, db),
                                       pool_pre_ping=True)
         if os.getenv('HBNB_ENV') == 'test':
-            # reversed(_.sorted_tables)
-            for table in Base.metadata.tables:
-                table.delete()
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """query on the current session all objects depending of the cls"""
-        objects = []
+        print(cls)
         if cls is None:
-            for aCls in [User, State, City, Place, Amenity, Review]:
-                objects += self.__session.query(aCls).all()
+            print(1)
+            objs = self.__session.query(State).all()
+            objs.extend(self.__session.query(City).all())
+            objs.extend(self.__session.query(User).all())
+            objs.extend(self.__session.query(Place).all())
+            objs.extend(self.__session.query(Review).all())
+            objs.extend(self.__session.query(Amenity).all())
         else:
-            objects = self.__session.query(cls).all()
+            print(2)
+            objs = self.__session.query(cls).all()
         dictionary = {}
-        for obj in objects:
+        for obj in objs:
             dictionary[f'{obj.__class__.__name__}.{obj.id}'] = obj
         return (dictionary)
 

@@ -260,20 +260,39 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """Shows all objects, or all objects of a class"""
+        print(args)
         print_list = []
-
         if args:
             args = args.split(" ")[0]
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
+            print(args)
+            print(self.classes[args])
+            print(storage.all(self.classes[args]))
             for k, v in storage.all(self.classes[args]).items():
                 print_list.append(str(v))
         else:
             for k, v in storage.all().items():
                 print_list.append(str(v))
-
         print(print_list)
+        """
+        print(line)
+        if not line:
+            o = storage.all()
+            print([o[k].__str__() for k in o])
+            return
+        try:
+            args = line.split(" ")
+            if args[0] not in self.classes:
+                raise NameError()
+
+            o = storage.all(eval(args[0]))
+            print([o[k].__str__() for k in o])
+
+        except NameError:
+            print("** class doesn't exist **")
+        """
 
     def help_all(self):
         """Help information for the all command"""
@@ -381,5 +400,3 @@ class HBNBCommand(cmd.Cmd):
         print("Usage: update <className> <id> <attName> <attVal>\n")
 
 
-if __name__ == "__main__":
-    HBNBCommand().cmdloop()
