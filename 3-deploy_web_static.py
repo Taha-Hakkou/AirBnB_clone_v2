@@ -26,17 +26,17 @@ def do_deploy(archive_path):
     try:
         put(archive_path, "/tmp/")
         static_path = archive_path.split('/')[1].split('.')[0]
-        run(f"mkdir -p /data/web_static/releases/{static_path}/")
-        run(f"tar -xzf /tmp/{static_path}.tgz -C \
-/data/web_static/releases/{static_path}/")
+        releases = '/data/web_static/releases'
+        current = '/data/web_static/current'
+        run(f"mkdir -p {releases}/{static_path}/")
+        run(f"tar -xzf /tmp/{static_path}.tgz -C {releases}/{static_path}/")
         run(f"rm -rf /tmp/{static_path}/")
-        run(f"mv /data/web_static/releases/{static_path}/web_static/* \
-/data/web_static/releases/{static_path}/")
-        run(f"rm -rf /data/web_static/releases/{static_path}/web_static")
-        run("rm -rf /data/web_static/current")
-        run(f"ln -s /data/web_static/releases/{static_path}/ \
-/data/web_static/current")
-        # New version deployed!
+        run(f"rsync -a {releases}/{static_path}/web_static/* \
+{releases}/{static_path}/")
+        run(f"rm -rf {releases}/{static_path}/web_static")
+        run(f"rm -rf {current}")
+        run(f"ln -s {releases}/{static_path}/ {current}")
+        print('New version deployed!')
         return (True)
     except Exception:
         return (False)
