@@ -31,7 +31,7 @@ def do_deploy(archive_path):
         run(f"mkdir -p {releases}/{static_path}/")
         run(f"tar -xzf /tmp/{static_path}.tgz -C {releases}/{static_path}/")
         run(f"rm -rf /tmp/{static_path}/")
-        run(f"rsync -a {releases}/{static_path}/web_static/* \
+        run(f"mv {releases}/{static_path}/web_static/* \
 {releases}/{static_path}/")
         run(f"rm -rf {releases}/{static_path}/web_static")
         run(f"rm -rf {current}")

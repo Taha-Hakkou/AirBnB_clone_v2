@@ -1,6 +1,7 @@
 # Redo the task #0 but by using Puppet
 exec {'update_packages':
-  command => 'apt -y update && apt -y upgrade'
+  command  => 'apt -y update && apt -y upgrade',
+  provider => 'shell'
 }
 
 package {'nginx':
@@ -25,15 +26,19 @@ file {'/data/web_static/current':
 }
 
 exec {'symlink':
-  command => 'ln -s /data/web_static/releases/test/ /data/web_static/current'
+  command  => 'ln -s /data/web_static/releases/test/ /data/web_static/current',
+  provider => 'shell'
 }
 
 exec {'ownership':
-  command => 'chown -R ubuntu.ubuntu /data/'
+  command  => 'chown -R ubuntu.ubuntu /data/',
+  provider => 'shell'
 }
 
 exec {'static_alias':
-  command  => '/usr/bin/sed -i "s/server_name _;/server_name _;\n\tlocation \/hbnb_static\/ {\n\t\talias \/data\/web_static\/current\/;\n\t}/" /etc/nginx/sites-available/default',
+  command  => 'sed -i "s/server_name _;/server_name _;\n\tlocation \/hbnb_static\/ {\n\t\talias \/data\/web_static\/current\/;\n\t}/" \
+  /etc/nginx/sites-available/default',
+  provider => 'shell'
 }
 
 service {'nginx':
