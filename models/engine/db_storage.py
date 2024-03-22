@@ -31,9 +31,7 @@ class DBStorage:
 
     def all(self, cls=None):
         """query on the current session all objects depending of the cls"""
-        print(cls)
         if cls is None:
-            print(1)
             objs = self.__session.query(State).all()
             objs.extend(self.__session.query(City).all())
             objs.extend(self.__session.query(User).all())
@@ -41,7 +39,6 @@ class DBStorage:
             objs.extend(self.__session.query(Review).all())
             objs.extend(self.__session.query(Amenity).all())
         else:
-            print(2)
             objs = self.__session.query(cls).all()
         dictionary = {}
         for obj in objs:
@@ -67,3 +64,7 @@ class DBStorage:
         sfactory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sfactory)
         self.__session = Session()
+
+    #def close(self):
+        #"""closes current session"""
+        #self.__session.remove()

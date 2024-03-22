@@ -10,7 +10,6 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        print('hi')
         if cls:
             clsObjects = {}
             for k, v in FileStorage.__objects.items():
@@ -58,3 +57,7 @@ class FileStorage:
         """deletes an object from storage dictionary"""
         if obj:
             del FileStorage.__objects[f'{obj.__class__.__name__}.{obj.id}']
+
+    #def close(self):
+        #"""calls reload"""
+        #self.reload()
