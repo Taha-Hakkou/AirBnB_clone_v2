@@ -1,21 +1,21 @@
 #!/usr/bin/python3
 """ 7-states_list.py """
 from models import storage
+from models.state import State
 from flask import Flask, render_template
 app = Flask(__name__)
 
 
 @app.teardown_appcontext
-def remove_session():
-    """ remove session """
+def remove_session(exception):
+    """ remove current sqlalchemy session """
     storage.close()
 
 
 @app.route("/states_list", strict_slashes=False)
 def states_list():
     """ states list route """
-    states = storage.all()
-    remove_session()
+    states = storage.all(State).values()
     return render_template('7-states_list.html', states=states)
 
 

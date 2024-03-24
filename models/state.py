@@ -19,7 +19,7 @@ class State(BaseModel, Base):
             """cities getter property"""
             from models import storage
             cities = []
-            for city in list(storage.all(City).values()):
+            for city in storage.all(City).values():
                 if city.state_id == self.id:
                     cities.append(city)
             return (cities)
