@@ -18,7 +18,7 @@
 	border-right: 1px solid #DDDDDD;
 }
 
-.filter_amenities {
+.amenities {
 	display: inline;
 	vertical-align: middle;
 	height: 100%;
@@ -40,13 +40,19 @@
 
 	border: 1px solid #DDDDDD;
 	border-radius: 4px;
+
+	/* /hbnb_filters */
+	max-height: 300px;
+	overflow-y: auto;
+	position: relative;
+	z-index: 1;
 }
 
 .locations:hover .popover {
 	display: inline-block;
 }
 
-.filter_amenities:hover .popover {
+.amenities:hover .popover {
 	display: inline-block;
 }
 

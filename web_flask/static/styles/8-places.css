@@ -28,17 +28,30 @@ article {
 	display: flex;
 	flex-direction: row;
 	position: relative;
-
+	/* /hbnb */
+	text-align: left;
+	justify-content: start;
+	/**/
 	height: 80px;	
 	width: 100%;
 }
+
+/* /hbnb */
+.headline h2 {
+	max-width: 300px;
+	margin-left: 0;
+
+	height: 70px;
+	overflow: hidden;
+}
+/**/
 
 .price_by_night {
 	display: flex;
 	justify-content: center;
 	align-self: flex-end;
 
-	position: absolute;
+	position: relative;
 	right: 0;
 
 	line-height: 60px;
